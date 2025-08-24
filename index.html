@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toton Squad</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #000;
+      color: white;
+      text-align: center;
+      overflow-x: hidden;
+    }
+
+    /* === Particles Background === */
+    #particles {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -1;
+    }
+
+    /* === Navbar === */
+    nav {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: rgba(255,0,0,0.85);
+      padding: 15px 30px;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      z-index: 1000;
+      backdrop-filter: blur(8px);
+    }
+
+    nav a {
+      font-weight: bold;
+      transition: 0.3s;
+    }
+    nav a:hover {
+      color: #ffcccc;
+    }
+
+    /* === Hero === */
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 0 20px;
+    }
+    .hero h1 {
+      font-size: 4rem;
+      color: #ff0000;
+      text-shadow: 0 0 25px #ff0000;
+      margin: 0;
+    }
+    .hero p {
+      font-size: 1.5rem;
+      margin-top: 15px;
+      color: #ff9999;
+    }
+
+    /* === Squad Section === */
+    .squad {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 25px;
+      padding: 100px 20px;
+    }
+    .card {
+      background: #1a1a1a;
+      border-radius: 15px;
+      width: 220px;
+      padding: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(255,0,0,0.5);
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 0 25px rgba(255,0,0,0.9);
+    }
+    .card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 15px;
+    }
+    .card h3 {
+      color: #ff4444;
+      margin: 10px 0 5px;
+    }
+    .card p {
+      color: #ccc;
+      font-size: 0.9rem;
+    }
+
+    /* === Footer / Contact === */
+    footer {
+      background: rgba(255,0,0,0.9);
+      padding: 40px 20px;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: white;
+      margin-top: 50px;
+      text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    }
+
+    /* === Cursor Custom === */
+    #cursor {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #ff0000;
+      border-radius: 50%;
+      position: absolute;
+      pointer-events: none;
+      transform: translate(-50%, -50%);
+      box-shadow: 0 0 20px #ff0000;
+      transition: transform 0.1s ease;
+      z-index: 9999;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Particles Background -->
+  <canvas id="particles"></canvas>
+
+  <!-- Navbar -->
+  <nav>
+    <a href="#home">Home</a>
+    <a href="#squad">Squad</a>
+    <a href="#contact">Contact</a>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero" id="home">
+    <h1>Toton Squad</h1>
+    <p>"Bersatu, berjuang, bertoton!"</p>
+  </section>
+
+  <!-- Squad Section -->
+  <section class="squad" id="squad">
+    <div class="card">
+      <img src="images/foto1.jpg" alt="Orion Yosef">
+      <h3>Orion Yosef</h3>
+      <p>Ketua Toton</p>
+    </div>
+    <div class="card">
+      <img src="images/foto2.jpg" alt="Al Ghaffar Ramadhan">
+      <h3>Al Ghaffar Ramadhan</h3>
+      <p>Wakil Ketua Toton</p>
+    </div>
+    <div class="card">
+      <img src="images/foto3.jpg" alt="Akmal Gilang Anugrah">
+      <h3>Akmal Gilang Anugrah</h3>
+      <p>Anggota Beban</p>
+    </div>
+    <div class="card">
+      <img src="images/foto4.jpg" alt="Khaizuran Arfa Yusuf">
+      <h3>Khaizuran Arfa Yusuf</h3>
+      <p>Bendahara Toton</p>
+    </div>
+    <div class="card">
+      <img src="images/foto5.jpg" alt="Lucky Lintang">
+      <h3>Lucky Lintang</h3>
+      <p>Jenderal Toton</p>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="contact">
+    Squad Contact
+  </footer>
+
+  <!-- Cursor Custom -->
+  <div id="cursor"></div>
+
+  <!-- Cursor Script -->
+  <script>
+    const cursor = document.getElementById("cursor");
+    document.addEventListener("mousemove", e => {
+      cursor.style.left = e.pageX + "px";
+      cursor.style.top = e.pageY + "px";
+    });
+  </script>
+
+  <!-- Particles Script -->
+  <script>
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      initParticles();
+    });
+
+    let particlesArray;
+
+    class Particle {
+      constructor(x, y, size, speedX, speedY) {
+        this.x = x;
+        this.y = y;
+        this.size = size;
+        this.speedX = speedX;
+        this.speedY = speedY;
+      }
+
+      update() {
+        this.x += this.speedX;
+        this.y += this.speedY;
+        if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+        if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+      }
+
+      draw() {
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+        ctx.fillStyle = "rgba(255, 50, 50, 0.8)";
+        ctx.shadowBlur = 20;
+        ctx.shadowColor = "#ff0000";
+        ctx.fill();
+      }
+    }
+
+    function initParticles() {
+      particlesArray = [];
+      const numberOfParticles = 80;
+      for (let i = 0; i < numberOfParticles; i++) {
+        let size = Math.random() * 3 + 1;
+        let x = Math.random() * canvas.width;
+        let y = Math.random() * canvas.height;
+        let speedX = (Math.random() - 0.5) * 1.5;
+        let speedY = (Math.random() - 0.5) * 1.5;
+        particlesArray.push(new Particle(x, y, size, speedX, speedY));
+      }
+    }
+    initParticles();
+
+    function animate() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < particlesArray.length; i++) {
+        particlesArray[i].update();
+        particlesArray[i].draw();
+      }
+      for (let a = 0; a < particlesArray.length; a++) {
+        for (let b = a; b < particlesArray.length; b++) {
+          let dx = particlesArray[a].x - particlesArray[b].x;
+          let dy = particlesArray[a].y - particlesArray[b].y;
+          let distance = Math.sqrt(dx * dx + dy * dy);
+          if (distance < 120) {
+            ctx.beginPath();
+            ctx.strokeStyle = "rgba(255,0,0,0.3)";
+            ctx.lineWidth = 1;
+            ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+            ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+            ctx.stroke();
+          }
+        }
+      }
+      requestAnimationFrame(animate);
+    }
+    animate();
+  </script>
+</body>
+</html>
